@@ -4,34 +4,41 @@ __lua__
 --main
 
 function _init()
-	state="0"
+	state=0
 	dir={{-1,0},{1,0},{0,-1},{0,1}}
 	currentplayer={}
 	currentobjects={}
+	moves={}
  l0={117,119,135}
- loadlevel(0)
+ loadlevel(state)
 end
 
 function _update60()
-	--if state=="start" then
-	if state=="0" then
+	--if state==-1 then
+	if state==0 then
+		if btnp(4) then
+			loadlevel(state)
+		end
+		if btnp(5) then
+			rewind()
+		end
 		moveplayer()
 		updatewin()
 		if checkwin() then
 			state="win"
 		end
-	--elseif state=="win" then
+	--elseif state==-2 then
 	end		
 end
 
 function _draw()
 	cls()
-	--if state=="start" then
-	if state=="0" then
+	--if state==-1 then
+	if state==0 then
 		map(0,0,0,0)
 		drawplayer(currentplayer)
 		drawobjects(currentobjects)
-	--elseif state=="win" then
+	--elseif state==-2 then
 	end
 end
 -->8
@@ -40,6 +47,8 @@ end
 function loadlevel(number)
  if number==0 then
  	parseleveldata(l0)
+ else
+ 	parseleveldata({0,0})
  end
 end
 
@@ -60,6 +69,7 @@ end
 function moveplayer()
 	for b=0,3 do
 		if btnp(b) then
+			add(moves,b)
 			newx=currentplayer.x+dir[b+1][1]
 			newy=currentplayer.y+dir[b+1][2]
 			if checkwalls(newx,newy) then
@@ -69,6 +79,17 @@ function moveplayer()
 			 end
 			end
 		end
+	end
+end
+
+function rewindmoveplayer(b)
+	newx=currentplayer.x+dir[b+1][1]
+	newy=currentplayer.y+dir[b+1][2]
+	if checkwalls(newx,newy) then
+		if checkobjects(newx,newy,b) then
+	 	currentplayer.x=newx
+	 	currentplayer.y=newy
+	 end
 	end
 end
 
@@ -120,6 +141,14 @@ function drawobjects(objects)
 end
 -->8
 --gamestate
+
+function rewind()
+	loadlevel(state)
+	deli(moves, #moves)
+	for k,v in pairs(moves) do
+		rewindmoveplayer(v)
+	end
+end
 
 function updatewin()
 	for x=0,15 do
