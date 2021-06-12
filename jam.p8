@@ -4,6 +4,7 @@ __lua__
 --main
 
 function _init()
+	dir={{-1,0},{1,0},{0,-1},{0,1}}
 	currentplayer={}
 	currentobjects={}
  l0={117, 119}
@@ -11,7 +12,12 @@ function _init()
 end
 
 function _update60()
-
+	for b=0,3 do
+		if btnp(b) then
+			currentplayer.x+=dir[b+1][1]
+			currentplayer.y+=dir[b+1][2]
+		end
+	end
 end
 
 function _draw()
@@ -22,12 +28,12 @@ function _draw()
 end
 
 function drawplayer(player)
-	spr(2,player[1]*8,player[2]*8)
+	spr(2,player.x*8,player.y*8)
 end
 
 function drawobjects(objects)
 	for k,v in pairs(objects) do
-		spr(3,v[1]*8,v[2]*8)
+		spr(3,v.x*8,v.y*8)
 	end
 end
 -->8
@@ -42,7 +48,7 @@ end
 function parseleveldata(entities)
  currentobjects={}
  for k,v in pairs(entities) do
- 	truepos={(v%16),flr(v/16)}
+ 	truepos={x=(v%16),y=flr(v/16)}
  	if k==1 then
  		currentplayer=truepos
  	else
