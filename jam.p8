@@ -78,7 +78,7 @@ function _draw()
 	end
 	for k,bond in pairs(bonds) do
 		for i,num in pairs(bond) do
-		 print(num,0,i*10,7)
+		 print(num,i*10,k*10,7)
 		end
 	end
 end
@@ -130,6 +130,15 @@ function moveplayer(b)
 	end
 end
 
+function moveobject(x,y,b)
+	for k,v in pairs(currentobjects) do
+	 if v.x==x and v.y==y then
+	  v.x=x+dir[b+1][1]
+	  v.y=y+dir[b+1][2]
+	 end
+	end
+end
+
 function checkwalls(x,y)
 	if fget(mget((state*16)+x,y),0) then
 	 return false
@@ -138,29 +147,27 @@ function checkwalls(x,y)
 end
 
 function checkobjects(x,y,b)
-	exists=false
-	for k,v in pairs(currentobjects) do
-	 if v.x==x and v.y==y then
-	  	exists=true
+	if hasobject(x,y) then
+	 --
+	 currentid=getblockid(x,y)
+	 currentbond=getbond(currentid)
+	 --
+	 for k,id in pairs(currentbond) do
+	 	obj=currentobjects[id]
+	 	destx = obj.x+dir[b+1][1]
+		 desty = obj.y+dir[b+1][2]
+		 if hasobject(destx,desty) then
+		 	return false
+			elseif not checkwalls(destx,desty) then
+			 return false
+			end
 	 end
-	end
-	if exists then
-	 destx = x+dir[b+1][1]
-	 desty = y+dir[b+1][2]
-		for k,v in pairs(currentobjects) do
-		 if v.x==destx and v.y==desty then
-		  	return false
-		 end
-		end
-		if not checkwalls(destx, desty) then
-		 return false
-		end
-		for k,v in pairs(currentobjects) do
-	 	if v.x==x and v.y==y then
-	  	v.x=x+dir[b+1][1]
-	  	v.y=y+dir[b+1][2]
-	 	end
+	 --
+	 for k,id in pairs(currentbond) do
+	 	obj=currentobjects[id]
+	 	moveobject(obj.x,obj.y,b)
 	 end
+		--
 	end
 	return true
 end
@@ -221,7 +228,25 @@ end
 --gamestate
 
 function addbond(k,l)
+	for k,bond in pairs(bonds) do
+		for i,num in pairs(bond) do
+		 if num==k or num==l then
+		 	return
+		 end
+		end
+	end
 	add(bonds, {k,l})
+end
+
+function getbond(id)
+	for k,bond in pairs(bonds) do
+		for i,num in pairs(bond) do
+		 if num==id then
+		 	return bond
+		 end
+		end
+	end
+	return {id}
 end
 
 function rewind()
@@ -299,6 +324,15 @@ end
 
 function istile(x,y,tile)
 	return mget((state*16)+x,y)==tile
+end
+
+function getblockid(x,y)
+	for k,v in pairs(currentobjects) do
+		if v.x==x and v.y==y then
+			return k
+		end
+	end
+	return -1
 end
 __gfx__
 00000000555555550000000000000000666666666686886666b6bb6666c6cc660000000000000000000000000000000000000000000000000000000000000000
