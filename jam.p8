@@ -23,7 +23,7 @@ function _update60()
 		if btnp(5) then
 			rewind()
 		end
-		moveplayer()
+		moveinput()
 		updatewin()
 		if checkwin() then
 			state+=1
@@ -71,23 +71,16 @@ end
 -->8
 --move
 
-function moveplayer()
+function moveinput()
 	for b=0,3 do
 		if btnp(b) then
 			add(moves,b)
-			newx=currentplayer.x+dir[b+1][1]
-			newy=currentplayer.y+dir[b+1][2]
-			if checkwalls(newx,newy) then
-				if checkobjects(newx,newy,b) then
-			 	currentplayer.x=newx
-			 	currentplayer.y=newy
-			 end
-			end
+			moveplayer(b)
 		end
 	end
 end
 
-function rewindmoveplayer(b)
+function moveplayer(b)
 	newx=currentplayer.x+dir[b+1][1]
 	newy=currentplayer.y+dir[b+1][2]
 	if checkwalls(newx,newy) then
@@ -151,7 +144,7 @@ function rewind()
 	loadlevel(state)
 	deli(moves, #moves)
 	for k,v in pairs(moves) do
-		rewindmoveplayer(v)
+		moveplayer(v)
 	end
 end
 
