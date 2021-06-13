@@ -7,7 +7,7 @@ function _init()
 	t=0
 	winanim=0
 	nolevels=6
-	state=5
+	state=-1
 	dir={{-1,0},{1,0},{0,-1},{0,1}}
 	currentplayer={}
 	currentobjects={}
